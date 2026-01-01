@@ -74,3 +74,5 @@ def update_student(student_id: int, student: Student):
 # when we want to do the inference of the some of the ML model in the fastapi then we use the https method as the post.
 # post is used when we want that the client send some data to the server and then server process it and infer some results from it.
 
+
+# in the fastapi we can also validate the output data using the pydantic and this is the additional feature of the fastapi and is widely used.

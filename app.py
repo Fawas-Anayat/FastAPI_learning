@@ -3,13 +3,9 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel , Field 
 from typing import Annotated , Optional,Literal
-import pickle
+from models.predict import model, MODEL_VERSION
 
-#loading the model
-with open('models/lr_model.pkl','rb') as f:
-    model=pickle.load(f)
 
-MODEL_VERSION='1.0.0'
 
 # its good practice that we declare the model version also and generally we take the model version from the "MLflow" which is a special service
 app=FastAPI()
