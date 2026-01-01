@@ -31,7 +31,7 @@ class Student(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "Hello FastAPI"}
+    return {"message": "Welcome to the House Price Predictor ...This is the lastest House price predictor traind on the best AI models and the best real world data and hence its relaible and trust worthy"}
 
 @app.get("/studentData/{student_id}")
 def student_data_by_id(student_id: int):
