@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from typing import Optional
-from pydantic import BaseModel, Field
+from typing import Optional ,Annotated
+from pydantic import BaseModel, Field,Literal
 
 app = FastAPI()
 
@@ -13,11 +13,21 @@ students = [
 ]
 
 class Student(BaseModel):
-    id: int
-    name: str = Field(min_length=5, max_length=25)
+    id:Annotated[str,Field(...,description='.this is the id of the person ',examples='1,2,3,....')]
+    name :Annotated[str,Field(min_length=5, max_length=25)]
     age: int = Field(gt=5, lt=30)
     city: str
+    gender: Annotated[
+        Literal['male', 'female', 'other'],
+        Field(
+            ...,
+            description="This is the gender of the patient",
+            examples={"example": "male"}
+        )
+    ]
     grade: Optional[str] = None
+
+#computed fields are the special kinds of the fields that are not provided by the user but they are calculated on the spot and the provided to the other fields
 
 @app.get("/")
 def home():
@@ -60,3 +70,7 @@ def update_student(student_id: int, student: Student):
             students[i] = student.dict()
             return {"message": "student updated", "student": students[i]}
     raise HTTPException(status_code=404, detail="student not found")
+
+# when we want to do the inference of the some of the ML model in the fastapi then we use the https method as the post.
+# post is used when we want that the client send some data to the server and then server process it and infer some results from it.
+
