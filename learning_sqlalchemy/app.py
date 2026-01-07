@@ -22,10 +22,13 @@ Session=sessionmaker(bind=engine)
 #     session.commit()
 
 session=Session()
-users=session.query(User).all()
+users=session.query(User).filter_by(id=102).first()
 
-for user in users:
-    print(F"id : {user.id} name: {user.name} city : {user.city}")
+# for user in users:
+    # user.name="abuzar"
+session.delete(users)
+session.commit()
+    # print(F"id : {user.id} name: {user.name} city : {user.city}")
 # user1=users[0]
 # print(user1.id)
 # print(user1.name)
