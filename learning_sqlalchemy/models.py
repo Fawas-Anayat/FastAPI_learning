@@ -1,9 +1,9 @@
-from sqlalchemy import create_engine 
+from sqlalchemy import create_engine , relationship 
 from sqlalchemy.orm import declarative_base , Mapped , mapped_column
 
 db_url="sqlite:///database.db"
 
-engine=create_engine(db_url)    # manages all the connections between the SQL and the python and do inter-translate the code
+engine=create_engine(db_url,echo=True)    # manages all the connections between the SQL and the python and do inter-translate the code
 
 Base=declarative_base()      # its a base class that provides the base from which all the classes of the database are inherited
 
