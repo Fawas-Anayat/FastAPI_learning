@@ -2,6 +2,7 @@ from models import User , engine
 from sqlalchemy.orm import sessionmaker
 import random
 from sqlalchemy import func
+from models import Address
 
 # Session=sessionmaker(bind=engine)
 # session=Session()
@@ -52,9 +53,39 @@ session=Session()
 # in the process of  the filterng we can use the or_ , not_ and the and_ methods to manipulate the data accordingly
 # users=session.query(User).where(User.id==103).all()
 
-users=session.query(User.city,func.count(User.id).label("count")).group_by(User.city).all()
+# users=session.query(User.city,func.count(User.id).label("count")).group_by(User.city).all()
 
 # print(users)
 
+# for u in users:
+#     print(f"city:{u.city} count {u.count}")
+
+
+user_1=User(name="usman",age=23)
+user_2=User(name="ahmad",age=65)
+user_3=User(name="abuzar",age=34)
+user_4=User(name="ghafar",age=45)
+
+# session.add_all([user_1,user_2,user_3,user_4])
+# session.commit()
+
+ad_1=Address(city="mansehra",postal_address="college doraha")
+
+user_1.addresses.append(ad_1)
+session.add(user_1)
+session.commit()
+session.close()
+
+users=session.query(User).all()
 for u in users:
-    print(f"city:{u.city} count {u.count}")
+    print(f"id {u.id} name : {u.name} ")
+    
+    if u.addresses:
+        for ad in u.addresses:
+            print(f"city {ad.city} postal_address :{ad.postal_address}")
+    print()
+
+
+
+
+
