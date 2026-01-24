@@ -18,22 +18,39 @@ def register_author(user : AuthorS, db:Session = Depends(get_db)):
     author_1 = AuthorM(name=user.name , email=user.email , password=hashed_password)
     db.add(author_1)
     db.commit()
-    db.refresh
+    db.refresh(author_1)
 
-    return author_1
+    return {
+        "id": author_1.id,
+        "name": author_1.name,
+        "email": author_1.email,
+        "message": "Author registered successfully"
+    }
+
+    
 
 
 @app.post("/login")
-def login(email : EmailStr , name : str , db : Session = Depends(get_db)):
+def login(email : EmailStr , password : str , db : Session = Depends(get_db)):
 
-    user=authinticate_user(name, email)
+    user=authinticate_user(password, email , db)
 
     if user is False:
         raise HTTPException (
             status_code=status.HTTP_401_UNAUTHORIZED , detail="invalid username or password"
         )
     
-    return user
+    access_token = create_access_token(user)
+    return {
+        "access_token" : access_token ,
+        "token_type" : "bearer" ,
+        "user" : {
+            "id" : user.id ,
+            "name" : user.name ,
+            "email": user.email
+        }
+    }
+
     
 
 

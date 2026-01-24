@@ -18,14 +18,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
-def authinticate_user(name : str , password : str ,db:Session = Depends(get_db)) -> bool:
-    user=db.query(AuthorM).filter(AuthorM.name == name).first()
+def authinticate_user(email : str , password : str ,db:Session) -> bool:
+    user=db.query(AuthorM).filter(AuthorM.email == email).first()
     if not user:
         return False
     
     if not verify_password(password, user.password):
         return False
-
+    
     return user    
 
 
