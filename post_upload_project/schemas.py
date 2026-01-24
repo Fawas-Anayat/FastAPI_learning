@@ -10,3 +10,6 @@ class Posts(BaseModel):
     author_id : int
     post_content : str = Field (... , min_length=5 , max_length= 500)
 
+class  Login(BaseModel):
+    email : EmailStr
+    password : str

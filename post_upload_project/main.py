@@ -3,8 +3,9 @@ from pydantic import BaseModel , EmailStr
 from fastapi.responses import JSONResponse 
 from sqlalchemy.orm import Session
 from models import AuthorM , Post
-from schemas import AuthorS , Posts
+from schemas import AuthorS , Posts ,  Login
 from db import get_db , Base , engine
+from auth import hash_password , verify_password , verify_token , create_access_token , authinticate_user
 
 app=FastAPI()
 
@@ -13,7 +14,8 @@ Base.metadata.create_all(bind=engine)
 
 @app.post("/register")
 def register_author(user : AuthorS, db:Session = Depends(get_db)):
-    author_1 = AuthorM(name=user.name , email=user.email , password=user.password)
+    hashed_password=hash_password(user.password)
+    author_1 = AuthorM(name=user.name , email=user.email , password=hashed_password)
     db.add(author_1)
     db.commit()
     db.refresh
@@ -21,7 +23,19 @@ def register_author(user : AuthorS, db:Session = Depends(get_db)):
     return author_1
 
 
+@app.post("/login")
+def login(email : EmailStr , name : str , db : Session = Depends(get_db)):
+
+    user=authinticate_user(name, email)
+
+    if user is False:
+        raise HTTPException (
+            status_code=status.HTTP_401_UNAUTHORIZED , detail="invalid username or password"
+        )
     
+    return user
+    
+
 
 # @app.get("/authors")
 # def get_all_authors():
