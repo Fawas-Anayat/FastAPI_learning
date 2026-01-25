@@ -3,6 +3,10 @@ from sqlalchemy import ForeignKey
 from typing import List
 from db import Base
 
+""" UNDERSTANDING THE RELATIONSHIPS"""
+
+
+
 class AuthorM(Base):
 
     __tablename__ = "authors"
@@ -13,7 +17,7 @@ class AuthorM(Base):
     password : Mapped[str] = mapped_column()
     posts_count :Mapped[int] = mapped_column(default=0 , server_default='0')
 
-    author : Mapped[List["Post"]] = relationship(back_populates="post")
+    posts = relationship("Post",back_populates="author")    # if don't put uselist=false then its one to many relationship
 
 class Post(Base):
 
@@ -23,5 +27,5 @@ class Post(Base):
     author_id : Mapped[int] = mapped_column(ForeignKey("authors.id"))
     content : Mapped[str] = mapped_column()
 
-    post : Mapped["AuthorM"] = relationship(back_populates="author")
+    author = relationship("AuthorM" ,back_populates="posts")
 

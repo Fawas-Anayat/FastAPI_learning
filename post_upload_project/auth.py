@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
-def authinticate_user(email : str , password : str ,db:Session) -> bool:
+def authinticate_user(password : str , email : str ,db:Session):
     user=db.query(AuthorM).filter(AuthorM.email == email).first()
     if not user:
         return False
@@ -26,7 +26,7 @@ def authinticate_user(email : str , password : str ,db:Session) -> bool:
     if not verify_password(password, user.password):
         return False
     
-    return user    
+    return user   
 
 
 
@@ -34,17 +34,22 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 # function to create the access token
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
+def create_access_token(data: AuthorM, expires_delta: Optional[timedelta] = None):
+    data_dic = {
+        "id" : data.id ,
+        "name" : data.name ,
+        "email" : data.email ,
+    }
+
     
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     
-    to_encode.update({"exp": expire})
+    data_dic.update({"exp": expire})
     
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(data_dic, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def verify_token(token: str) -> dict:

@@ -51,7 +51,25 @@ def login(email : EmailStr , password : str , db : Session = Depends(get_db)):
         }
     }
 
+
+@app.post('/uploadPost')
+def upload_post(post : Posts ,email :EmailStr , password :str , db : Session = Depends(get_db)):
+    hashed_pass = hash_password(password)
+    user = authinticate_user(password , email, db)
     
+    if user is False:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN , detail="you are unauthorised to perform this action")
+    new_post = Post(content=post.post_content , author = user)
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+
+    return{
+        "message" : "post uploaded successfully"
+    }
+    
+
+
 
 
 # @app.get("/authors")
