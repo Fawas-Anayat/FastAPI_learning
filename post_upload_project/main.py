@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from models import AuthorM , Post
 from schemas import AuthorS , Posts ,  Login
 from db import get_db , Base , engine
-from auth import hash_password , verify_password , verify_token , create_access_token , authinticate_user
+from auth import hash_password , verify_password , verify_token , create_access_token , authinticate_user ,  get_current_user
+from fastapi.security import OAuth2PasswordRequestForm 
 
 app=FastAPI()
 
@@ -31,9 +32,9 @@ def register_author(user : AuthorS, db:Session = Depends(get_db)):
 
 
 @app.post("/login")
-def login(email : EmailStr , password : str , db : Session = Depends(get_db)):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
 
-    user=authinticate_user(password, email , db)
+    user=authinticate_user(form_data.password, form_data.username, db)
 
     if user is False:
         raise HTTPException (
@@ -53,12 +54,11 @@ def login(email : EmailStr , password : str , db : Session = Depends(get_db)):
 
 
 @app.post('/uploadPost')
-def upload_post(post : Posts ,email :EmailStr , password :str , db : Session = Depends(get_db)):
-    hashed_pass = hash_password(password)
-    user = authinticate_user(password , email, db)
+def upload_post(post : Posts ,user : AuthorM = Depends(get_current_user) , db : Session = Depends(get_db)):
+    # user = authinticate_user(user.password, user.email, db)
     
-    if user is False:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN , detail="you are unauthorised to perform this action")
+    # if user is False:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN , detail="you are unauthorised to perform this action")
     new_post = Post(content=post.post_content , author = user)
     db.add(new_post)
     db.commit()
@@ -68,22 +68,5 @@ def upload_post(post : Posts ,email :EmailStr , password :str , db : Session = D
         "message" : "post uploaded successfully"
     }
     
-
-
-
-
-# @app.get("/authors")
-# def get_all_authors():
-#     if not db.authors:
-#         raise HTTPException (status_code=404 , detail="no author found with this credentials")
-#     auth_list= []
-#     for user in db.authors.values():
-#         auth_copy = user.copy()
-#         auth_copy.pop("password",None)
-#         auth_list.append(auth_copy)
-#     return auth_list
-
-# @app.post("/addPost")
-# def add_post(post : Posts):
 
 

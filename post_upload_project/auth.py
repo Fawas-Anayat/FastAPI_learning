@@ -26,7 +26,7 @@ def authinticate_user(password : str , email : str ,db:Session):
     if not verify_password(password, user.password):
         return False
     
-    return user   
+    return user  
 
 
 
@@ -61,4 +61,20 @@ def verify_token(token: str) -> dict:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
+        ) 
+    
+
+def get_current_user(
+        token : str = Depends(oauth2_scheme) ,
+        db : Session = Depends(get_db)
+):
+    payload = verify_token(token)
+    user_email = payload.get("email")
+    user = db.query(AuthorM).filter(AuthorM.email == user_email).first()
+    if not user :
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND , detail="no user found with this information"
         )
+    return user
+    
+
