@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from models import AuthorM , Post
 from schemas import AuthorS , Posts ,  Login
 from db import get_db , Base , engine
-from auth import hash_password , verify_password , verify_token , create_access_token , authinticate_user ,  get_current_user
+from auth import hash_password , verify_password , verify_token , create_access_token , authinticate_user ,  get_current_user , create_tokens
 from fastapi.security import OAuth2PasswordRequestForm 
 
 app=FastAPI()
@@ -41,10 +41,11 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             status_code=status.HTTP_401_UNAUTHORIZED , detail="invalid username or password"
         )
     
-    access_token = create_access_token(user)
+    tokens = create_tokens(user,db)
     return {
-        "access_token" : access_token ,
-        "token_type" : "bearer" ,
+        "access_token" : tokens["access_token"] ,
+        "refresh-token" : tokens["refresh_token"] ,
+        "token_type" : tokens["token_type"] ,
         "user" : {
             "id" : user.id ,
             "name" : user.name ,
