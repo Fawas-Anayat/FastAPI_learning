@@ -70,4 +70,14 @@ def upload_post(post : Posts ,user : AuthorM = Depends(get_current_user) , db : 
     }
     
 
+@app.get("/myPosts")
+def get_all_posts(author : AuthorM = Depends(get_current_user) , db : Session = Depends(get_db)):
+    posts = db.query(Post).filter(author.id == Post.author_id).all()
+    return posts
+
+     
+
+
+
+
 
